@@ -36,3 +36,8 @@ export const getDailyWeather = (location = 'hangzhou') => {
 export const getNowWeather = (location = 'hangzhou') => {
   return wxRequest(getWeatherUrl(location, 'now'))
 }
+
+export const getCity = (longitude, latitude) => {
+  const url = `https://api.seniverse.com/v3/location/search.json?key=${KEY}&q=${latitude}:${longitude}`
+  return wxRequest(url)
+}

@@ -1,5 +1,6 @@
 <template>
   <view class='cnt'>
+    <view class='selectLocation' bindtap='chooseLocation'>选择地点</view>
     <view class='location'>
       <view class='locationName'>{{weather.location.name}}</view>
       <view class='nowText'>{{currentWeather.now.text}}</view>
@@ -29,12 +30,35 @@ export default class Index extends wepy.page {
     currentWeather: {}
   };
 
+  methods = {
+    chooseLocation() {
+      wepy.chooseLocation().then(res => {
+        return this.getWeatherByll(res.longitude, res.latitude);
+      });
+    }
+  };
+
   onLoad() {
-    api.getDailyWeather().then(res => {
+    wepy.getLocation().then(res => {
+      return this.getWeatherByll(res.longitude, res.latitude);
+    }).catch(err => {
+      this.getWeatherByCity('hangzhou')
+    });
+  }
+
+  getWeatherByll(longitude, latitude) {
+    return api.getCity(longitude, latitude).then(res => {
+      const location = res.data.results[0].path.split(',')[1];
+      return this.getWeatherByCity(location);
+    });
+  }
+
+  getWeatherByCity(location) {
+    api.getDailyWeather(location).then(res => {
       this.weather = res.data.results[0];
       this.$apply();
     });
-    api.getNowWeather().then(res => {
+    api.getNowWeather(location).then(res => {
       this.currentWeather = res.data.results[0];
       this.$apply();
     });
@@ -43,11 +67,18 @@ export default class Index extends wepy.page {
 </script>
 <style>
 .cnt {
-  background: linear-gradient(#6f7c85, #919b9f);
   padding: 20px;
   height: 100vh;
   box-sizing: border-box;
+  color: #5cb85c;
+}
+.selectLocation {
+  margin-bottom: 100rpx;
+  padding: 10rpx;
+  background: #5cb85c;
   color: #fff;
+  border-radius: 10rpx;
+  text-align: center;
 }
 .location {
   margin-bottom: 10px;
