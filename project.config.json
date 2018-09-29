@@ -1,0 +1,15 @@
+{
+	"description": "weather",
+	"setting": {
+		"urlCheck": true,
+		"es6": false,
+		"postcss": false,
+		"minified": false,
+		"newFeature": true
+	},
+	"compileType": "miniprogram",
+	"appid": "wx277452dd9118e9ef",
+	"projectname": "mini-app",
+	"miniprogramRoot": "dist/",
+	"condition": {}
+}
