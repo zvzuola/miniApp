@@ -4,6 +4,8 @@ import CryptoJS from 'crypto-js'
 const UID = "UAA44ECA5D";
 const KEY = "ikllxqdufpsrynqf";
 
+const JOKE_KEY = "2ef2cce384714d2c93efd37a0cf0f371"
+
 const getWeatherUrl = (location = 'hangzhou', type ='daily') => {
   const api = `https://api.seniverse.com/v3/weather/${type}.json`;
   const ts = Math.floor((new Date()).getTime() / 1000);
@@ -39,5 +41,15 @@ export const getNowWeather = (location = 'hangzhou') => {
 
 export const getCity = (longitude, latitude) => {
   const url = `https://api.seniverse.com/v3/location/search.json?key=${KEY}&q=${latitude}:${longitude}`
+  return wxRequest(url)
+}
+
+export const getWordsJoke = (page) => {
+  const url = `http://api.shujuzhihui.cn/api/joke/qiubai/word?appKey=${JOKE_KEY}&page=${page}`
+  return wxRequest(url)
+}
+
+export const getImgsJoke = (page) => {
+  const url = `http://api.shujuzhihui.cn/api/joke/qiubai/img?appKey=${JOKE_KEY}&page=${page}`
   return wxRequest(url)
 }

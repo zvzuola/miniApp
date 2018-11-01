@@ -2,9 +2,9 @@
   <view class='cnt'>
     <view class='selectLocation' bindtap='chooseLocation'>选择地点</view>
     <view class='location'>
-      <view class='locationName'>{{weather.location.name}}</view>
-      <view class='nowText'>{{currentWeather.now.text}}</view>
-      <view class='nowTemp'>{{currentWeather.now.temperature}}℃</view>
+      <text class='locationName'>{{weather.location.name}}</text>
+      <text class='nowText'>{{currentWeather.now.text}}</text>
+      <text class='nowTemp'>{{currentWeather.now.temperature}}℃</text>
     </view>
     <view class='weather'>
       <view class='daily' wx:for="{{weather.daily}}" wx:key="{{item.date}}">
@@ -13,6 +13,16 @@
         <text>{{item.low}}℃/{{item.high}}℃</text>
       </view>
     </view>
+    <view class="joke-list">
+      <view class="joke" wx:for="{{wordsJoke.words_joke}}" wx:key="{{item.id}}">{{item.content}}</view>
+      <view class="joke" wx:for="{{imgsJoke.imgs_joke}}" wx:key="{{item.id}}">
+        <image src="{{item.img_url}}" mode="widthFix" />
+        <view>{{item.content}}</view>
+      </view>
+    </view>
+    <button bindtap='indexJoke'>首页</button>
+    <button disabled="{{page === 1}}" bindtap='prevJoke'>上一页</button>
+    <button disabled="{{page === 10}}" bindtap='nextJoke'>下一页</button>
   </view>
 </template>
 
@@ -27,7 +37,10 @@ export default class Index extends wepy.page {
 
   data = {
     weather: {},
-    currentWeather: {}
+    currentWeather: {},
+    wordsJoke: {},
+    imgsJoke: {},
+    page: 1
   };
 
   methods = {
@@ -35,6 +48,21 @@ export default class Index extends wepy.page {
       wepy.chooseLocation().then(res => {
         return this.getWeatherByll(res.longitude, res.latitude);
       });
+    },
+
+    nextJoke() {
+      this.page = this.page + 1
+      this.getJoke(this.page)
+    },
+
+    prevJoke() {
+      this.page = this.page - 1
+      this.getJoke(this.page)
+    },
+
+    indexJoke() {
+      this.page = 1
+      this.getJoke(this.page)
     }
   };
 
@@ -44,6 +72,8 @@ export default class Index extends wepy.page {
     }).catch(err => {
       this.getWeatherByCity('hangzhou')
     });
+
+    this.getJoke(this.page)    
   }
 
   getWeatherByll(longitude, latitude) {
@@ -63,42 +93,74 @@ export default class Index extends wepy.page {
       this.$apply();
     });
   }
+
+  getJoke(page) {
+    return Promise.all([api.getWordsJoke(page), api.getImgsJoke(page)])
+      .then(res => {
+        this.wordsJoke = res[0].data.RESULT
+        this.imgsJoke = res[1].data.RESULT
+        this.$apply()
+      })
+      .then(res => {
+        wx.pageScrollTo({
+          scrollTop: 0,
+          duration: 300
+        })
+      })
+  }
 }
 </script>
 <style>
 .cnt {
-  padding: 20px;
+  padding: 20rpx;
   height: 100vh;
   box-sizing: border-box;
   color: #5cb85c;
 }
 .selectLocation {
-  margin-bottom: 100rpx;
+  margin-bottom: 30rpx;
   padding: 10rpx;
   background: #5cb85c;
   color: #fff;
   border-radius: 10rpx;
+  font-size: 24rpx;
   text-align: center;
+  /* animation:ripple 1s ease-in-out infinite; */
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}
+
+@keyframes ripple {
+  0%{
+    transform: scale(1);
+  }
+  50%{
+    transform: scale(1.2);
+  }
+  100%{
+    transform: scale(1);
+  }
 }
 .location {
-  margin-bottom: 10px;
+  margin-bottom: 10rpx;
   text-align: center;
 }
 .locationName {
   font-size: 40rpx;
-  margin-bottom: 10rpx;
 }
 .nowText {
   font-size: 28rpx;
-  margin-bottom: 10rpx;
+  margin-left: 10rpx;
 }
 .nowTemp {
-  font-size: 60rpx;
-  margin-bottom: 10rpx;
+  font-size: 28rpx;
+  margin-left: 10rpx;
 }
 
 .weather {
-  font-size: 14px;
+  margin-bottom: 30rpx;
+  font-size: 28rpx;
   display: flex;
   justify-content: space-around;
 }
@@ -106,5 +168,11 @@ export default class Index extends wepy.page {
   text-align: center;
   display: flex;
   flex-direction: column;
+}
+.joke-list {
+}
+.joke {
+  margin-bottom: 20rpx;
+  font-size: 24rpx;
 }
 </style>
