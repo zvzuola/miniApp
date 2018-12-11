@@ -1,0 +1,93 @@
+<template>
+  <view class="container">
+    <control />
+    <view
+      class="song"
+      wx:for="{{songs[album]}}"
+      wx:key="{{item.name}}"
+      @tap="play({{index}})"
+    >
+      <image
+        class="img"
+        src="http://tannerv.ddns.net:12345/SpotiReact/{{item.artwork}}"
+      />
+      <text>{{item.name}}</text>
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import { connect } from 'wepy-redux';
+import { getSongsByAlbum, playSong } from '@/store/actions';
+import Control from '@/components/control';
+@connect(
+  {
+    songs(state) {
+      return state.music.songs;
+    },
+    music(state) {
+      return state.music;
+    }
+  },
+  {
+    getSongsByAlbum,
+    playSong
+  }
+)
+export default class Songs extends wepy.page {
+  config = {
+    navigationBarTitleText: '歌单'
+  };
+
+  data = {
+    album: ''
+  };
+
+  components = {
+    control: Control
+  };
+
+  onLoad({ album }) {
+    this.album = album;
+    wx.cloud.init({
+      traceUser: true
+    });
+    if (!this.songs[album].length) {
+      this.methods.getSongsByAlbum(album);
+    }
+  }
+
+  methods = {
+    play(currentIndex) {
+      const song = this.songs[this.album][currentIndex];
+      const audio = this.$parent.globalData.audio;
+      const src = encodeURI(
+        `http://tannerv.ddns.net:12345/SpotiFree/${song.url}`
+      );
+      audio.src = src;
+      audio.title = song.name;
+      this.methods.playSong({
+        currentIndex,
+        playlist: this.songs[this.album]
+      });
+    }
+  };
+}
+</script>
+<style>
+.song {
+  display: flex;
+  padding: 10rpx;
+  font-size: 32rpx;
+  background: #fff;
+}
+.song + .song {
+  margin-top: 10rpx;
+}
+.img {
+  width: 100rpx;
+  height: 100rpx;
+  margin-right: 30rpx;
+}
+</style>

@@ -1,0 +1,51 @@
+<template>
+    <view>
+        <view>冉冉</view>
+        <button class="btn" type="primary" size="mini">好的</button>
+        <button class="btn cancel-btn" type="warn" size="mini" bindtap="cancel" 
+            style="left:{{position.left}};top:{{position.top}};">不行</button>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+export default class Zr extends wepy.page {
+  config = {
+    navigationBarTitleText: '冉冉'
+  };
+
+  data = {
+    position: {
+      top: 0,
+      left: 0
+    },
+    systemInfo: {}
+  };
+
+  onLoad() {
+    const res = wepy.getSystemInfoSync();
+    this.systemInfo = res;
+    console.log(res)
+  }
+
+  methods = {
+    cancel() {
+      const left = `${Math.random() * this.systemInfo.windowWidth * this.systemInfo.pixelRatio - 200}rpx`;
+      const top = `${Math.random() * this.systemInfo.windowHeight * this.systemInfo.pixelRatio - 30}rpx`;
+      this.position = {
+        top,
+        left
+      };
+    }
+  };
+}
+</script>
+
+<style>
+.btn {
+  width: 200rpx;
+}
+.cancel-btn {
+    position: absolute;
+}
+</style>

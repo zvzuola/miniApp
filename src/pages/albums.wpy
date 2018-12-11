@@ -1,0 +1,71 @@
+<template>
+  <view class="container">
+    <control />    
+    <navigator
+      class="album"
+      url="/pages/songs?album={{item.album}}"
+      wx:for="{{albums[artist]}}"
+      wx:key="{{item.album}}"
+    >
+      <image class="img" src="http://tannerv.ddns.net:12345/SpotiReact/{{item.artwork}}" />
+      <view>{{item.album}}</view>
+    </navigator>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import { connect } from 'wepy-redux';
+import { getAlbumsByArtist } from '@/store/actions';
+import Control from '@/components/control';
+
+@connect(
+  {
+    albums(state) {
+      return state.music.albums;
+    }
+  },
+  {
+    getAlbumsByArtist
+  }
+)
+export default class Albums extends wepy.page {
+  config = {
+    navigationBarTitleText: '专辑'
+  };
+
+  data = {
+    artist: ''
+  }
+
+  components = {
+    control: Control
+  };
+
+  onLoad({ artist }) {
+    this.artist = artist
+    wx.cloud.init({
+      traceUser: true
+    });
+    if (!this.albums[artist].length) {
+      this.methods.getAlbumsByArtist(artist);
+    }
+  }
+}
+</script>
+<style>
+.album {
+  display: flex;
+  padding: 10rpx;
+  font-size: 32rpx;
+  background: #fff;
+}
+.album + .album {
+  margin-top: 10rpx;
+}
+.img {
+  width: 100rpx;
+  height: 100rpx;
+  margin-right: 30rpx;
+}
+</style>

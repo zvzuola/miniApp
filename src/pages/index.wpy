@@ -73,7 +73,7 @@ export default class Index extends wepy.page {
       this.getWeatherByCity('hangzhou')
     });
 
-    this.getJoke(this.page)    
+    this.getJoke(this.page)  
   }
 
   getWeatherByll(longitude, latitude) {

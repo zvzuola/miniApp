@@ -1,5 +1,6 @@
 {
 	"description": "weather",
+	"cloudfunctionRoot": "cloudfunctions/",
 	"setting": {
 		"urlCheck": false,
 		"es6": false,

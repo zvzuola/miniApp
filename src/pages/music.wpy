@@ -1,0 +1,57 @@
+<template>
+  <view class="container">
+    <control />
+    <navigator
+      class="artist"
+      url="/pages/albums?artist={{item.artist}}"
+      wx:for="{{artists}}"
+      wx:key="{{item.artist}}"
+    >{{item.artist}}</navigator>
+  </view>
+</template>
+<script>
+import wepy from 'wepy';
+import { connect } from 'wepy-redux';
+import { getArtists } from '@/store/actions';
+import Control from '@/components/control';
+
+@connect(
+  {
+    artists(state) {
+      return state.music.artists;
+    }
+  },
+  {
+    getArtists
+  }
+)
+export default class Music extends wepy.page {
+  config = {
+    navigationBarTitleText: '音乐'
+  };
+
+  components = {
+    control: Control
+  };
+
+  onLoad() {
+    wx.cloud.init({
+      traceUser: true
+    });
+    if (!this.artists.length) {
+      this.methods.getArtists();
+    }
+  }
+}
+</script>
+<style>
+.artist {
+  display: flex;
+  padding: 10rpx;
+  font-size: 32rpx;
+  background: #fff;
+}
+.artist + .artist {
+  margin-top: 10rpx;
+}
+</style>

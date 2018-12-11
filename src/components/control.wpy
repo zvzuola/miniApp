@@ -1,0 +1,135 @@
+<template>
+  <view
+    class="control-cnt"
+    wx:if="{{playlist.length > 0}}"
+  >
+    <view class="control">
+      <text class="name">{{playlist.length > 0 ? playlist[currentIndex].name : ''}}</text>
+      <!-- <text class="time">{{playInfo.duration}}/{{playInfo.currentTime}}</text> -->
+      <view class="btn-cnt">
+        <button
+          class="btn"
+          disabled="{{currentIndex + 1 >= playlist.length}}"
+          @tap="playNext"
+        >next</button>
+        <button
+          class="btn"
+          @tap="changePlayerStatus"
+        >{{playInfo.isPlaying}}</button>
+        <button
+          class="btn"
+          disabled="{{currentIndex - 1 < 0}}"
+          @tap="playPrev"
+        >prev</button>
+      </view>
+    </view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy';
+import { connect } from 'wepy-redux';
+import { playSong, setPlayInfo } from '@/store/actions';
+import * as utils from '@/utils';
+@connect(
+  {
+    currentIndex(state) {
+      return state.music.currentIndex;
+    },
+    playlist(state) {
+      return state.music.playlist;
+    },
+    playInfo(state) {
+      const { duration, currentTime, isPlaying } = state.music.playInfo;
+      return {
+        duration: utils.formatTime(Math.floor(duration)),
+        currentTime: utils.formatTime(Math.floor(currentTime)),
+        isPlaying
+      };
+    }
+  },
+  {
+    playSong,
+    setPlayInfo
+  }
+)
+export default class Control extends wepy.component {
+  methods = {
+    playNext() {
+      //   const index = this.currentIndex + 1;
+      //   if (index >= this.playlist.length) return;
+      //   this.play(index);
+      wepy.$instance.playNext();
+    },
+
+    playPrev() {
+      //   const index = this.currentIndex - 1;
+      //   if (index < 0) return;
+      //   this.play(index);
+      wepy.$instance.playPrev();
+    },
+
+    changePlayerStatus() {
+      const audio = wepy.$instance.globalData.audio;
+      if (!this.playInfo.isPlaying) {
+        audio.play();
+      } else {
+        audio.pause();
+      }
+      this.methods.setPlayInfo({
+        isPlaying: !this.playInfo.isPlaying
+      });
+    }
+  };
+
+  play(index) {
+    console.log(index);
+    const song = this.playlist[index];
+    const audio = wepy.$instance.globalData.audio;
+    const src = encodeURI(
+      `http://tannerv.ddns.net:12345/SpotiFree/${song.url}`
+    );
+    audio.src = src;
+    audio.title = song.name;
+    this.methods.playSong({
+      currentIndex: index
+    });
+  }
+}
+</script>
+<style>
+.control-cnt {
+  height: 70rpx;
+}
+.control {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 70rpx;
+  padding: 10rpx;
+  font-size: 32rpx;
+  box-sizing: border-box;
+  background: #fff;
+}
+.control .time {
+  width: 108rpx;
+  font-size: 24rpx;
+  white-space: nowrap;
+}
+.btn-cnt {
+  width: 170rpx;
+  display: flex;
+  justify-content: space-between;
+}
+.btn-cnt .btn {
+  width: 50rpx;
+  height: 50rpx;
+  border: 1rpx solid #333;
+  border-radius: 50%;
+  padding: 0;
+  background: transparent;
+}
+</style>

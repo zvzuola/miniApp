@@ -1,11 +1,9 @@
 <style lang="less">
 .container {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
+  padding: 10rpx;
+  min-height: 100vh;
   box-sizing: border-box;
+  background: #f5f5f5;
 }
 </style>
 
@@ -14,6 +12,7 @@ import wepy from 'wepy';
 import 'wepy-async-function';
 
 import { setStore } from 'wepy-redux';
+import { setPlayInfo, playSong } from '@/store/actions';
 import configStore from './store';
 
 const store = configStore();
@@ -21,7 +20,13 @@ setStore(store);
 
 export default class extends wepy.app {
   config = {
-    pages: ['pages/index'],
+    pages: [
+      'pages/music',
+      'pages/albums',
+      'pages/songs',
+      'pages/index',
+      'pages/zr'
+    ],
     window: {
       backgroundTextStyle: 'light',
       navigationBarBackgroundColor: '#fff',
@@ -35,5 +40,102 @@ export default class extends wepy.app {
     this.use('requestfix');
     this.use('promisify');
   }
+
+  onLaunch() {
+    this.globalData.audio = wx.getBackgroundAudioManager();
+    const audio = this.globalData.audio;
+
+    // 音频开始播放
+    audio.onPlay(() => {
+      store.dispatch(
+        setPlayInfo({
+          isPlaying: true,
+          duration: audio.duration || 0
+        })
+      );
+    });
+
+    // 音频播放进度控制
+    audio.onTimeUpdate(() => {
+      const duration = audio.duration;
+      const currentTime = audio.currentTime;
+      store.dispatch(
+        setPlayInfo({
+          duration,
+          currentTime
+        })
+      );
+    });
+
+    // 音频暂停后
+    audio.onPause(() => {
+      store.dispatch(
+        setPlayInfo({
+          isPlaying: false
+        })
+      );
+    });
+
+    // 音频停止后
+    audio.onStop(() => {
+      store.dispatch(
+        setPlayInfo({
+          isPlaying: false
+        })
+      );
+    });
+
+    audio.onEnded(() => {
+      this.playNext();
+    });
+
+    audio.onPrev(() => {
+      this.playPrev();
+    });
+
+    audio.onNext(() => {
+      this.playNext();
+    });
+  }
+
+  playNext() {
+    const state = store.getState();
+    const { currentIndex, playlist } = state.music;
+
+    const index = currentIndex + 1;
+    if (index >= playlist.length) return;
+    this.play(index);
+  }
+
+  playPrev() {
+    const state = store.getState();
+    const { currentIndex } = state.music;
+
+    const index = currentIndex - 1;
+    if (index < 0) return;
+    this.play(index);
+  }
+
+  play(index) {
+    const state = store.getState();
+    const { currentIndex, playlist } = state.music;
+
+    const song = playlist[index];
+    const src = encodeURI(
+      `http://tannerv.ddns.net:12345/SpotiFree/${song.url}`
+    );
+    const audio = this.globalData.audio;
+    audio.src = src;
+    audio.title = song.name;
+    store.dispatch(
+      playSong({
+        currentIndex: index
+      })
+    );
+  }
+
+  globalData = {
+    audio: null
+  };
 }
 </script>
