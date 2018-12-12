@@ -103,7 +103,10 @@ export default class extends wepy.app {
     const { currentIndex, playlist } = state.music;
 
     const index = currentIndex + 1;
-    if (index >= playlist.length) return;
+    if (index >= playlist.length) {
+      wx.showToast({title: '已经是最后一首了', icon: 'none'})
+      return;
+    }
     this.play(index);
   }
 
@@ -112,7 +115,10 @@ export default class extends wepy.app {
     const { currentIndex } = state.music;
 
     const index = currentIndex - 1;
-    if (index < 0) return;
+    if (index < 0) {
+      wx.showToast({title: '已经是第一首了', icon: 'none'})
+      return;
+    }
     this.play(index);
   }
 
