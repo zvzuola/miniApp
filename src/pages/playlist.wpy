@@ -1,0 +1,104 @@
+<template>
+  <view>
+    <!-- <view wx:for="{{playlist}}" wx:key="{{item.name}}">{{item.name}}</view> -->
+    <image
+      class="img"
+      src="http://tannerv.ddns.net:12345/SpotiReact/{{playlist[currentIndex].artwork}}"
+    />
+    <view class="song-info">
+      <view>{{playlist[currentIndex].name}}</view>
+      <text>{{playlist[currentIndex].artist}}</text> — <text>{{playlist[currentIndex].album}}</text>
+    </view>
+    <view class="progress-cnt">
+      <text>{{playInfo.currentTime}}</text>
+      <view class="progress">
+        <view class="bar" style="width: {{playInfo.progress}}%"></view>
+      </view>
+      <text>{{playInfo.duration}}</text>
+    </view>
+    <controlbtns type="full" />
+  </view>
+</template>
+<script>
+import wepy from 'wepy';
+import { connect } from 'wepy-redux';
+import ControlBtns from '@/components/control-btns';
+import * as utils from '@/utils';
+
+@connect({
+  currentIndex(state) {
+    return state.music.currentIndex;
+  },
+  playlist(state) {
+    return state.music.playlist;
+  },
+  playInfo(state) {
+    const { duration, currentTime, isPlaying } = state.music.playInfo;
+    return {
+      duration: utils.formatTime(Math.floor(duration)),
+      currentTime: utils.formatTime(Math.floor(currentTime)),
+      progress: (currentTime / duration) * 100,
+      isPlaying
+    };
+  }
+})
+export default class Playlist extends wepy.page {
+  config = {
+    navigationBarTitleText: '列表'
+  };
+
+  components = {
+    controlbtns: ControlBtns
+  };
+}
+</script>
+<style>
+.img {
+  width: 480rpx;
+  height: 480rpx;
+  display: block;
+  margin: 30rpx auto 0;
+}
+
+.song-info {
+  margin-bottom:100rpx;
+  margin-top:100rpx;
+  font-size: 32rpx;
+  text-align: center;
+  color: red;
+}
+.song-info view{
+  margin-bottom: 10rpx;
+  color: #333;
+}
+.progress-cnt {
+  display: flex;
+  justify-content: space-between;
+  width: 600rpx;
+  margin: 100rpx auto;
+  align-items: center;
+  font-size: 24rpx;
+}
+
+.progress-cnt text {
+  width: 60rpx;
+}
+.progress-cnt text:last-child{
+  text-align:right;
+}
+.progress {
+  flex: 1;
+  height: 6rpx;
+  background: #e6e6e6;
+  overflow: hidden;
+  border-radius: 6rpx;
+  margin-right: 10rpx;
+  margin-left: 10rpx;
+}
+.bar {
+  height: 100%;
+  background: #1aad16;
+  border-radius: 3rpx;
+}
+
+</style>

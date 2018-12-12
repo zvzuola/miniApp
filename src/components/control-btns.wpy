@@ -1,0 +1,159 @@
+<template>
+  <view class="btn-cnt {{type}}">
+    <view class="btn prev-song" disabled="{{currentIndex - 1 < 0}}" @tap.stop="playPrev"></view>
+    <view class="btn {{playInfo.isPlaying ? 'pause' : 'resume'}}" @tap.stop="changePlayerStatus"></view>
+    <view
+      class="btn next-song"
+      disabled="{{currentIndex + 1 >= playlist.length}}"
+      @tap.stop="playNext"
+    ></view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy';
+import { connect } from 'wepy-redux';
+import { playSong, setPlayInfo } from '@/store/actions';
+import * as utils from '@/utils';
+
+@connect(
+  {
+    currentIndex(state) {
+      return state.music.currentIndex;
+    },
+    playlist(state) {
+      return state.music.playlist;
+    },
+    playInfo(state) {
+      const { duration, currentTime, isPlaying } = state.music.playInfo;
+      return {
+        duration: utils.formatTime(Math.floor(duration)),
+        currentTime: utils.formatTime(Math.floor(currentTime)),
+        progress: Math.floor((currentTime / duration) * 100),
+        isPlaying
+      };
+    }
+  },
+  {
+    playSong,
+    setPlayInfo
+  }
+)
+export default class ControlBtns extends wepy.component {
+  props = {
+    // type: {
+    //   type: String,
+    //   default: 'small'
+    // }
+    type: String
+  };
+  methods = {
+    playNext() {
+      wepy.$instance.playNext();
+    },
+
+    playPrev() {
+      wepy.$instance.playPrev();
+    },
+
+    changePlayerStatus() {
+      const audio = wepy.$instance.globalData.audio;
+      if (!this.playInfo.isPlaying) {
+        if (!audio.src) {
+          wepy.$instance.play(this.currentIndex);
+        } else {
+          audio.play();
+        }
+      } else {
+        audio.pause();
+      }
+      this.methods.setPlayInfo({
+        isPlaying: !this.playInfo.isPlaying
+      });
+    }
+  };
+}
+</script>
+<style>
+.btn-cnt {
+  display: flex;
+  justify-content: space-between;
+}
+
+.btn {
+  margin: 0;
+  padding: 0;
+  outline: none;
+  border: none;
+  background: transparent;
+  border-radius: 0;
+}
+
+.resume {
+  background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjIiIGhlaWdodD0iMjYiIHZpZXdCb3g9IjAgMCAyMiAyNiIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj4KPHRpdGxlPnBsYXk8L3RpdGxlPgo8ZGVzYz5DcmVhdGVkIHVzaW5nIEZpZ21hPC9kZXNjPgo8ZyBpZD0iQ2FudmFzIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMSAzNzgpIj4KPGcgaWQ9InBsYXkiPgo8dXNlIHhsaW5rOmhyZWY9IiNwYXRoMF9maWxsIiB0cmFuc2Zvcm09Im1hdHJpeCgxLjQ3NDUxZS0xNiAxIC0xIDEuNDc0NTFlLTE2IDI0IC0zODApIi8+CjwvZz4KPC9nPgo8ZGVmcz4KPHBhdGggaWQ9InBhdGgwX2ZpbGwiIGQ9Ik0gMTQuMTM0IDEuNUMgMTQuNTE4OSAwLjgzMzMzMiAxNS40ODExIDAuODMzMzMzIDE1Ljg2NiAxLjVMIDI3LjEyNDQgMjFDIDI3LjUwOTMgMjEuNjY2NyAyNy4wMjgxIDIyLjUgMjYuMjU4MyAyMi41TCAzLjc0MTY3IDIyLjVDIDIuOTcxODcgMjIuNSAyLjQ5MDc0IDIxLjY2NjcgMi44NzU2NCAyMUwgMTQuMTM0IDEuNVoiLz4KPC9kZWZzPgo8L3N2Zz4K')
+    center no-repeat;
+}
+.pause {
+  background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMjUiIHZpZXdCb3g9IjAgMCAxOCAyNSIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj4KPHRpdGxlPlBhdXNlPC90aXRsZT4KPGRlc2M+Q3JlYXRlZCB1c2luZyBGaWdtYTwvZGVzYz4KPGcgaWQ9IkNhbnZhcyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMjEgMzc3KSI+CjxnIGlkPSJQYXVzZSI+CjxnIGlkPSJSZWN0YW5nbGUiPgo8dXNlIHhsaW5rOmhyZWY9IiNwYXRoMF9maWxsIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMjEgLTM3NykiLz4KPC9nPgo8ZyBpZD0iUmVjdGFuZ2xlIj4KPHVzZSB4bGluazpocmVmPSIjcGF0aDBfZmlsbCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTEwIC0zNzcpIi8+CjwvZz4KPC9nPgo8L2c+CjxkZWZzPgo8cGF0aCBpZD0icGF0aDBfZmlsbCIgZD0iTSAwIDFDIDAgMC40NDc3MTYgMC40NDc3MTUgMCAxIDBMIDYgMEMgNi41NTIyOCAwIDcgMC40NDc3MTUgNyAxTCA3IDI0QyA3IDI0LjU1MjMgNi41NTIyOCAyNSA2IDI1TCAxIDI1QyAwLjQ0NzcxNSAyNSAwIDI0LjU1MjMgMCAyNEwgMCAxWiIvPgo8L2RlZnM+Cjwvc3ZnPgo=')
+    center no-repeat;
+}
+.prev-song {
+  background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjkwIiBoZWlnaHQ9IjIzNSIgdmlld0JveD0iMCAwIDI5MCAyMzUiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik0yODcuMzY1IDEwOS43NzdMMTQ5LjUyOCAxLjc2MDQ2QzE0Ny4zNzYgLTAuMDkyNTQxMyAxNDQuMzUyIC0wLjUyMTU0IDE0MS43NzkgMC42NTg0NTlDMTM5LjIwOSAxLjg0MTQ2IDEzNy41NDkgNC40MTE0NiAxMzcuNTQ5IDcuMjQ1NDZWMTAwLjE3MkwxMS45NjUgMS43NjA0NkM5LjgyNCAtMC4wOTI1NDEzIDYuODAxIC0wLjUyMTU0IDQuMjE5IDAuNjU4NDU5QzEuNjQ4IDEuODQxNDYgMCA0LjQxMTQ2IDAgNy4yNDY0NlYyMjYuOTI5QzAgMjI5Ljc4MSAxLjY2NyAyMzIuMzYzIDQuMjcyIDIzMy41MzNDNi44NzggMjM0LjY5OCA5LjkxNyAyMzQuMjM2IDEyLjA1NyAyMzIuMzM5TDEzNy41NDIgMTMwLjY3OFYyMjYuOTI5QzEzNy41NDIgMjI5Ljc4MSAxMzkuMjIgMjMyLjM2MyAxNDEuODI5IDIzMy41MzNDMTQ0LjQyMyAyMzQuNjk4IDE0Ny40NzQgMjM0LjIzNiAxNDkuNiAyMzIuMzM5TDI4Ny40MzcgMTIwLjY4NkMyODguOTk5IDExOS4yOTggMjg5Ljg5OSAxMTcuMjMzIDI4OS44NjkgMTE1LjIxOEMyODkuODU3IDExMy4xMjggMjg4LjkzOCAxMTEuMTQ5IDI4Ny4zNjUgMTA5Ljc3N1oiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDI4OS44Nykgc2NhbGUoLTEgMSkiIGZpbGw9ImJsYWNrIi8+Cjwvc3ZnPgo=')
+    center no-repeat;
+}
+.next-song {
+  background: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pg0KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE2LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPg0KPCFET0NUWVBFIHN2ZyBQVUJMSUMgIi0vL1czQy8vRFREIFNWRyAxLjEvL0VOIiAiaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkIj4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgd2lkdGg9IjI4OS44N3B4IiBoZWlnaHQ9IjI4OS44N3B4IiB2aWV3Qm94PSIwIDAgMjg5Ljg3IDI4OS44NyIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMjg5Ljg3IDI4OS44NzsiDQoJIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPGc+DQoJPHBhdGggZD0iTTI4Ny4zNjUsMTM3LjYyOEwxNDkuNTI4LDI5LjYxMWMtMi4xNTItMS44NTMtNS4xNzYtMi4yODItNy43NDktMS4xMDJjLTIuNTcsMS4xODMtNC4yMywzLjc1My00LjIzLDYuNTg3djkyLjkyNw0KCQlMMTEuOTY1LDI5LjYxMWMtMi4xNDEtMS44NTMtNS4xNjQtMi4yODItNy43NDYtMS4xMDJDMS42NDgsMjkuNjkyLDAsMzIuMjYyLDAsMzUuMDk3djIxOS42ODNjMCwyLjg1MiwxLjY2Nyw1LjQzNCw0LjI3Miw2LjYwNA0KCQljMi42MDYsMS4xNjUsNS42NDUsMC43MDMsNy43ODUtMS4xOTRsMTI1LjQ4NS0xMDEuNjYxdjk2LjI1MWMwLDIuODUyLDEuNjc4LDUuNDM0LDQuMjg3LDYuNjA0DQoJCWMyLjU5NCwxLjE2NSw1LjY0NSwwLjcwMyw3Ljc3MS0xLjE5NGwxMzcuODM3LTExMS42NTNjMS41NjItMS4zODgsMi40NjItMy40NTMsMi40MzItNS40NjgNCgkJQzI4OS44NTcsMTQwLjk3OSwyODguOTM4LDEzOSwyODcuMzY1LDEzNy42Mjh6Ii8+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8L3N2Zz4NCg==')
+    center no-repeat;
+}
+
+.btn-cnt.small {
+  width: 180rpx;
+  margin-right: 10rpx;
+}
+
+.btn-cnt.small .btn {
+  width: 30rpx;
+  height: 30rpx;
+}
+
+.btn-cnt.small .resume {
+  background-size: 24rpx;
+}
+
+.btn-cnt.small .pause {
+  background-size: 20rpx;
+}
+
+.btn-cnt.small .prev-song {
+  background-size: 30rpx;
+}
+
+.btn-cnt.small .next-song {
+  background-size: 30rpx;
+}
+
+.btn-cnt.full {
+  width: 100%;
+  justify-content:space-around;
+}
+
+.btn-cnt.full .btn {
+  width: 50rpx;
+  height: 50rpx;
+}
+
+.btn-cnt.full .resume {
+  background-size: 38rpx;
+}
+
+.btn-cnt.full .pause {
+  background-size: 30rpx;
+}
+
+.btn-cnt.full .prev-song {
+  background-size: 50rpx;
+}
+
+.btn-cnt.full .next-song {
+  background-size: 50rpx;
+}
+</style>

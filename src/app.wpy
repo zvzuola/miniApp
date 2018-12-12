@@ -24,6 +24,7 @@ export default class extends wepy.app {
       'pages/music',
       'pages/albums',
       'pages/songs',
+      'pages/playlist',
       'pages/index',
       'pages/zr'
     ],
