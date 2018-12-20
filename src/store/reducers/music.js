@@ -37,7 +37,10 @@ export default handleActions(
           ...state.albums,
           [artist]: albums
         },
-        songs
+        songs: {
+          ...state.songs,
+          ...songs
+        }
       };
     },
 
