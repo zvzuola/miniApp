@@ -13,7 +13,7 @@
         <text>{{item.low}}℃/{{item.high}}℃</text>
       </view>
     </view>
-    <view class="joke-list">
+    <!-- <view class="joke-list">
       <view class="joke" wx:for="{{wordsJoke.words_joke}}" wx:key="{{item.id}}">{{item.content}}</view>
       <view class="joke" wx:for="{{imgsJoke.imgs_joke}}" wx:key="{{item.id}}">
         <image src="{{item.img_url}}" mode="widthFix" />
@@ -22,7 +22,12 @@
     </view>
     <button bindtap='indexJoke'>首页</button>
     <button disabled="{{page === 1}}" bindtap='prevJoke'>上一页</button>
-    <button disabled="{{page === 10}}" bindtap='nextJoke'>下一页</button>
+    <button disabled="{{page === 10}}" bindtap='nextJoke'>下一页</button> -->
+    <view class="menus">
+      <view wx:for="{{menus}}" wx:key="{{index}}">
+        <view>{{item}}</view>
+      </view>
+    </view>
   </view>
 </template>
 
@@ -40,7 +45,8 @@ export default class Index extends wepy.page {
     currentWeather: {},
     wordsJoke: {},
     imgsJoke: {},
-    page: 1
+    page: 1,
+    menus: []
   };
 
   methods = {
@@ -67,13 +73,30 @@ export default class Index extends wepy.page {
   };
 
   onLoad() {
+    // 获取天气
     wepy.getLocation().then(res => {
       return this.getWeatherByll(res.longitude, res.latitude);
     }).catch(err => {
       this.getWeatherByCity('hangzhou')
     });
 
-    this.getJoke(this.page)  
+    // this.getJoke(this.page)  
+
+
+    // 获取菜单
+    wx.cloud
+    .callFunction({
+      name: 'getMenus',
+      data: {
+        url: 'http://crystalpot.cn/menus/0'
+      }
+    })
+    .then(({ result }) => {
+      console.log(result.menus);
+      this.menus = result.menus;
+      this.$apply();
+    });
+
   }
 
   getWeatherByll(longitude, latitude) {
@@ -173,6 +196,9 @@ export default class Index extends wepy.page {
 }
 .joke {
   margin-bottom: 20rpx;
+  font-size: 24rpx;
+}
+.menus{
   font-size: 24rpx;
 }
 </style>
