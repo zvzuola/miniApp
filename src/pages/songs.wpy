@@ -71,7 +71,13 @@ export default class Songs extends wepy.page {
         currentIndex,
         playlist: this.songs[this.album]
       });
-    }
+      this.methods.gotoPlaylist()
+    },
+    gotoPlaylist() {
+      wx.navigateTo({
+        url: '/pages/playlist'
+      });
+    },
   };
 }
 </script>
