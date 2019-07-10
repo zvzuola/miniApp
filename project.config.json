@@ -1,5 +1,5 @@
 {
-	"description": "weather",
+	"description": "music",
 	"cloudfunctionRoot": "cloudfunctions/",
 	"setting": {
 		"urlCheck": false,
@@ -12,5 +12,7 @@
 	"appid": "wx277452dd9118e9ef",
 	"projectname": "mini-app",
 	"miniprogramRoot": "dist/",
+	"simulatorType": "wechat",
+	"simulatorPluginLibVersion": {},
 	"condition": {}
 }
