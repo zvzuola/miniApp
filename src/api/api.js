@@ -44,6 +44,11 @@ export const getCity = (longitude, latitude) => {
   return wxRequest(url)
 }
 
+export const getSuggestion = (location) => {
+  const url = `https://api.seniverse.com/v3/life/suggestion.json?key=${KEY}&location=${location}&language=zh-Hans`
+  return wxRequest(url)
+}
+
 export const getWordsJoke = (page) => {
   const url = `http://api.shujuzhihui.cn/api/joke/qiubai/word?appKey=${JOKE_KEY}&page=${page}`
   return wxRequest(url)

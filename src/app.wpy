@@ -1,4 +1,5 @@
 <style lang="less">
+@import './app.wxss';
 .container {
   padding: 10rpx;
   min-height: 100vh;
@@ -21,11 +22,11 @@ setStore(store);
 export default class extends wepy.app {
   config = {
     pages: [
+      'pages/index',
       'pages/music',
       'pages/albums',
       'pages/songs',
       'pages/playlist',
-      'pages/index',
       'pages/zr'
     ],
     window: {
@@ -34,6 +35,11 @@ export default class extends wepy.app {
       navigationBarTitleText: 'WeChat',
       navigationBarTextStyle: 'black'
     },
+    permission: {
+      'scope.userLocation': {
+        desc: '你的位置信息将用于小程序位置接口的效果展示'
+      }
+    }
     // "tabBar": {
     //   "color": "#272636",
     //   "selectedColor": "#FFD161",
@@ -126,7 +132,7 @@ export default class extends wepy.app {
 
     const index = currentIndex + 1;
     if (index >= playlist.length) {
-      wx.showToast({title: '已经是最后一首了', icon: 'none'})
+      wx.showToast({ title: '已经是最后一首了', icon: 'none' });
       return;
     }
     this.play(index);
@@ -138,7 +144,7 @@ export default class extends wepy.app {
 
     const index = currentIndex - 1;
     if (index < 0) {
-      wx.showToast({title: '已经是第一首了', icon: 'none'})
+      wx.showToast({ title: '已经是第一首了', icon: 'none' });
       return;
     }
     this.play(index);
