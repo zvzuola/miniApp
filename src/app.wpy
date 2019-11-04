@@ -23,6 +23,7 @@ export default class extends wepy.app {
   config = {
     pages: [
       'pages/index',
+      'pages/chat',
       'pages/music',
       'pages/albums',
       'pages/songs',
@@ -35,32 +36,43 @@ export default class extends wepy.app {
       navigationBarTitleText: 'WeChat',
       navigationBarTextStyle: 'black'
     },
+    plugins: {
+      chatbot: {
+        version: '1.1.4',
+        provider: 'wx8c631f7e9f2465e1'
+      },
+      WechatSI: {
+        version: '0.3.1',
+        provider: 'wx069ba97219f66d99'
+      }
+    },
+    requiredBackgroundModes: ['audio'],
     permission: {
       'scope.userLocation': {
         desc: '你的位置信息将用于小程序位置接口的效果展示'
       }
+    },
+    tabBar: {
+      color: '#272636',
+      selectedColor: '#0064FF',
+      backgroundColor: '#fff',
+      borderStyle: 'black',
+      list: [
+        {
+          pagePath: 'pages/index',
+          iconPath: 'images/home.png',
+          selectedIconPath: 'images/home-active.png',
+          color: 'white',
+          text: '首页'
+        },
+        {
+          pagePath: 'pages/chat',
+          iconPath: 'images/ai.png',
+          selectedIconPath: 'images/ai-active.png',
+          text: '智能AI'
+        }
+      ]
     }
-    // "tabBar": {
-    //   "color": "#272636",
-    //   "selectedColor": "#FFD161",
-    //   "backgroundColor": "#fff",
-    //   "borderStyle": "black",
-    //   "list": [
-    //     {
-    //       "pagePath": "pages/music",
-    //       // "iconPath": "pages/images/home.png",
-    //       // "selectedIconPath": "pages/images/home-selected.png",
-    //       "color":"white",
-    //       "text": "首页"
-    //     },
-    //     {
-    //       "pagePath": "pages/index",
-    //       // "iconPath": "pages/images/my.png",
-    //       // "selectedIconPath": "pages/images/my-selected.png",
-    //       "text": "我的"
-    //     }
-    //   ]
-    // }
   };
 
   constructor() {

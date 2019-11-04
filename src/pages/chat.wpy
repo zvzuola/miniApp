@@ -1,0 +1,49 @@
+<template>
+  <view style="height: 100vh;">
+    <view style="height: 100vh">
+      <chat bind:backHome="goBackHome" />
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import * as api from '@/api/api';
+const plugin = requirePlugin('chatbot');
+
+export default class Index extends wepy.page {
+  config = {
+    navigationBarTitleText: '智能AI',
+    usingComponents: {
+      chat: 'plugin://chatbot/chat'
+    }
+  };
+
+  methods = {
+    goBackHome: function() {
+      wepy.switchTab({
+        url: 'index'
+      });
+    }
+  };
+
+  onLoad() {
+    plugin.init({
+      appid: 'mghEigwawzUNUpWhnImIqZVs8gE7Fv',
+      openid: '', //小程序用户openid，非必填
+      guideList: [
+        '杭州天气怎么样',
+        '音乐',
+        '中午吃啥呢',
+        '你知道如何排解压力吗',
+        '法国国土面积是多少',
+        '世界最高峰'
+      ],
+      success: () => {},
+      fail: error => {}
+    });
+  }
+}
+</script>
+<style lang="less">
+</style>
