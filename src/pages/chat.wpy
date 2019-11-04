@@ -9,11 +9,11 @@
 <script>
 import wepy from 'wepy';
 import * as api from '@/api/api';
-const plugin = requirePlugin('chatbot');
+// const plugin = requirePlugin('chatbot');
 
 export default class Index extends wepy.page {
   config = {
-    navigationBarTitleText: '智能AI',
+    navigationBarTitleText: 'AI天气',
     usingComponents: {
       chat: 'plugin://chatbot/chat'
     }
@@ -28,20 +28,23 @@ export default class Index extends wepy.page {
   };
 
   onLoad() {
-    plugin.init({
-      appid: 'mghEigwawzUNUpWhnImIqZVs8gE7Fv',
-      openid: '', //小程序用户openid，非必填
-      guideList: [
-        '杭州天气怎么样',
-        '音乐',
-        '中午吃啥呢',
-        '你知道如何排解压力吗',
-        '法国国土面积是多少',
-        '世界最高峰'
-      ],
-      success: () => {},
-      fail: error => {}
-    });
+    // plugin.init({
+    //   appid: 'mghEigwawzUNUpWhnImIqZVs8gE7Fv',
+    //   openid: '', //小程序用户openid，非必填
+    //   guideList: [
+    //     '杭州天气怎么样',
+    //     '音乐',
+    //     '中午吃啥呢',
+    //     '你知道如何排解压力吗',
+    //     '法国国土面积是多少',
+    //     '世界最高峰'
+    //   ],
+    //   welcome: '小威欢迎您',
+    //   success: () => {},
+    //   fail: error => {
+    //     console.error(error);
+    //   }
+    // });
   }
 }
 </script>

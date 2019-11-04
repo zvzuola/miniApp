@@ -15,6 +15,7 @@ import 'wepy-async-function';
 import { setStore } from 'wepy-redux';
 import { setPlayInfo, playSong } from '@/store/actions';
 import configStore from './store';
+const plugin = requirePlugin('chatbot');
 
 const store = configStore();
 setStore(store);
@@ -69,7 +70,7 @@ export default class extends wepy.app {
           pagePath: 'pages/chat',
           iconPath: 'images/ai.png',
           selectedIconPath: 'images/ai-active.png',
-          text: '智能AI'
+          text: 'AI天气'
         }
       ]
     }
@@ -84,6 +85,23 @@ export default class extends wepy.app {
   onLaunch() {
     this.globalData.audio = wx.getBackgroundAudioManager();
     const audio = this.globalData.audio;
+
+    plugin.init({
+      appid: 'mghEigwawzUNUpWhnImIqZVs8gE7Fv',
+      openid: '', //小程序用户openid，非必填
+      guideList: [
+        '杭州天气怎么样',
+        '音乐',
+        '中午吃啥呢',
+        '你知道如何排解压力吗',
+        '世界最高峰'
+      ],
+      welcome: '小威欢迎您',
+      success: () => {},
+      fail: error => {
+        console.error(error);
+      }
+    });
 
     // 音频开始播放
     audio.onPlay(() => {
